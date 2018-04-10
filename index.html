@@ -1,9 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>this is like whatever</title>
+  <title>moot</title>
+  <link rel="stylesheet" href="moot.css">
 </head>
 <body>
-hello
+<script src="application.js"></script>
+<script type="text/javascript">
+  var APP = new Application;
+</script>
+<div class="outer">
+  <div class="split">
+    <div class="left">
+      <div class="plans">
+        <h3>plans list</h3>
+        <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(document, this.value)">
+      </div>
+      <div class="requirements">
+        <h3>requirements</h3>
+        <input type="text" class="item" placeholder="add requirement">
+      </div>
+      <div class="plan-details">
+        <h3>plan details</h3>
+        <input type="text" class="item" placeholder="add detail / task">
+      </div>
+    </div>
+    <div class="log">
+      <h3>log</h3>
+    </div>
+  </div>
+  <div class="nextup">
+    <h3 style="display:inline">nextup</h3>
+    <input type="text" class="item" placeholder="add icebox">
+  </div>
+</div>
 </body>
 </html>
