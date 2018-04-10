@@ -28,3 +28,4 @@ To use, check out the repo, run `npm install && npm start`, and get mooting.
 * visual polish
 * render workstream to press-on tattoo
 * reorder lists & represent list order in changelog
+* real frontend framework
