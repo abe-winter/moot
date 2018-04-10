@@ -8,3 +8,4 @@ html, body {height:100%; margin:0; padding:0; background:lightgray;}
 .log {flex-grow:1; padding:10px; border-left: solid 1px black;}
 div.nextup {flex-grow:0; border-top:solid 1px black; padding:10px;}
 input.item {background-color:lightgray; font-size:large; border:solid 1px black; padding:10px 20px; margin-left:20px;}
+a.plan-link {display:block; margin:10px;}

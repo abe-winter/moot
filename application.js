@@ -11,10 +11,43 @@ class Application {
   }
 
   render(document) {
+    var plans = document.querySelector('div.plans');
+    for (var elt of document.querySelectorAll('a.plan-link'))
+      elt.remove();
+    for (let plan of this.storage.plans) {
+      let elt = document.createElement('a');
+      elt.className = 'plan-link';
+      elt.textContent = plan.name;
+      elt.href = '#';
+      elt.onclick = () => this.selectPlan(document, plan.name);
+      plans.appendChild(elt);
+    }
+    
     var plan = this.storage.findPlan(this.activePlanName);
-    document.querySelector('div.plans');
-    document.querySelector('div.requirements');
-    document.querySelector('div.plan-details');
+    
+    for (var elt of document.querySelectorAll('div.req-item'))
+      elt.remove();
+    
+    for (var elt of document.querySelectorAll('div.plan-item'))
+      elt.remove();
+    
+    if (plan) {
+      var dets = document.querySelector('div.plan-details');
+      for (let task of plan.tasks) {
+        let elt = document.createElement('div');
+        elt.className = 'req-item';
+        elt.textContent = task.name;
+        dets.appendChild(elt);
+      }
+
+      var reqs = document.querySelector('div.requirements');
+      for (let task of plan.reqs) {
+        let elt = document.createElement('div');
+        elt.className = 'req-item';
+        elt.textContent = task.name;
+        reqs.appendChild(elt);
+      }
+    }
   }
 
   addChange(document, raw) {
@@ -33,16 +66,17 @@ class Application {
   }
 
   selectPlan(document, name) {
+    console.log('select plan', name);
     this.activePlanName = name;
     this.render(document);
   }
 
   addReq(document, name) {
-    this.addChange(document, {noun: 'req', verb: 'add', name: name, parentName: this.addPlanName});
+    this.addChange(document, {noun: 'req', verb: 'add', name: name, parentName: this.activePlanName});
   }
 
   addTask(document, name) {
-    this.addChange(document, {noun: 'task', verb: 'add', name: name, parentName: this.addPlanName});
+    this.addChange(document, {noun: 'task', verb: 'add', name: name, parentName: this.activePlanName});
   }
 
   addNextup(document, name) {

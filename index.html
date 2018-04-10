@@ -14,15 +14,15 @@
     <div class="left">
       <div class="plans">
         <h3>plans list</h3>
-        <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(document, this.value)">
+        <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(document, this.value); this.value='';">
       </div>
       <div class="requirements">
         <h3>requirements</h3>
-        <input type="text" class="item" placeholder="add requirement">
+        <input type="text" class="item" placeholder="add requirement" onchange="APP.addReq(document, this.value); this.value='';">
       </div>
       <div class="plan-details">
         <h3>plan details</h3>
-        <input type="text" class="item" placeholder="add detail / task">
+        <input type="text" class="item" placeholder="add detail / task" onchange="APP.addTask(document, this.value); this.value='';">
       </div>
     </div>
     <div class="log">
@@ -31,7 +31,7 @@
   </div>
   <div class="nextup">
     <h3 style="display:inline">nextup</h3>
-    <input type="text" class="item" placeholder="add icebox">
+    <input type="text" class="item" placeholder="add icebox" onchange="APP.addNextup(document, this.value); this.value='';">
   </div>
 </div>
 </body>

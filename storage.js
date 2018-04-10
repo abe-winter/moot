@@ -149,7 +149,9 @@ class Storage {
   changeTask(change) {
     var plan = this.findPlan(change.parentName, true);
     switch (change.verb) {
-      // case 'add':
+      case 'add':
+        plan.tasks.push({name: change.name, finished: false});
+        break;
       // case 'finished':
       // case 'delete':
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
@@ -160,7 +162,9 @@ class Storage {
   changeReq(change) {
     var plan = this.findPlan(change.parentName, true);
     switch (change.verb) {
-      // case 'add':
+      case 'add':
+        plan.reqs.push({name: change.name, finished: false});
+        break;
       // case 'finished':
       // case 'delete':
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
