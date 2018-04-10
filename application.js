@@ -25,6 +25,28 @@ class Application {
     }
   }
 
+  /** helper for checklist rendering w/ callbacks */
+  renderChecklist(document, container, plan, noun, items, className) {
+    for (let item of items) {
+      let elt = document.createElement('label');
+      elt.className = className;
+      var check = document.createElement('input');
+      check.type = 'checkbox';
+      check.checked = item.finished;
+      check.onchange = (evt) => this.oncheck(document, plan, noun, item, evt);
+      elt.appendChild(check);
+      elt.appendChild(document.createTextNode(' ' + item.name + ' '));
+      var span = document.createElement('span');
+      span.textContent = '(del)';
+      span.onclick = (evt) => {
+        alert('todo: delete things');
+        return false;
+      };
+      elt.appendChild(span);
+      container.appendChild(elt);
+    }
+  }
+
   render(document) {
     var plans = document.querySelector('div.plans');
     for (var elt of document.querySelectorAll('a.plan-link'))
@@ -40,29 +62,20 @@ class Application {
     
     var plan = this.storage.findPlan(this.activePlanName);
     
-    for (var elt of document.querySelectorAll('div.req-item'))
+    for (var elt of document.querySelectorAll('label.req-item'))
       elt.remove();
     
-    for (var elt of document.querySelectorAll('div.plan-item'))
+    for (var elt of document.querySelectorAll('label.plan-item'))
       elt.remove();
     
     if (plan) {
-      var dets = document.querySelector('div.plan-details');
-      for (let task of plan.tasks) {
-        let elt = document.createElement('div');
-        elt.className = 'req-item';
-        elt.textContent = task.name;
-        dets.appendChild(elt);
-      }
-
-      var reqs = document.querySelector('div.requirements');
-      for (let task of plan.reqs) {
-        let elt = document.createElement('div');
-        elt.className = 'req-item';
-        elt.textContent = task.name;
-        reqs.appendChild(elt);
-      }
+      this.renderChecklist(document, document.querySelector('div.requirements'), plan, 'req', plan.reqs, 'req-item');
+      this.renderChecklist(document, document.querySelector('div.plan-details'), plan, 'task', plan.tasks, 'plan-item');
     }
+  }
+
+  oncheck(document, plan, noun, item, evt) {
+    this.addChange(document, {parentName: plan.name, name: item.name, noun, verb: 'finished', state: evt.target.checked});
   }
 
   /** render a log string to dom */

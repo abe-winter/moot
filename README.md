@@ -28,11 +28,15 @@ To use, check out the repo, run `npm install && npm start`, and get mooting.
 * If the moot contributors breach these terms, users are not entitled to any damages, but the moot team will (a) announce the violation on moot message boards (if any), and (b) modify the codebase or these terms so the application is in compliance.
 * Moot keeps deleted data in its log and in stock configuration will never delete anything even if it appears gone from the user interface. If you need your data deleted, delete the log.json file yourself.
 
-## missing features
+## wishlist
 
 * cross-device sync / backup
-* sharing
+* status sharing button
 * timestamps on log messages
 * mobile
-* look at what's in the icebox
+* [look at what's in the icebox](https://en.wikipedia.org/wiki/Black_hole_information_paradox)
 * clean up old plans, full delete
+* better keyboard controls
+* visual polish
+* render workstream to press-on tattoo
+* reorder lists & represent list order in changelog

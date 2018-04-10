@@ -83,6 +83,8 @@ class EditVerb {
 }
 
 function inflateChange(rawChange) {
+  if (rawChange.v != 0 && rawChange.v != null)
+    throw new Error("you're on a new version my friend");
   switch (rawChange.verb) {
   case 'add':
     return new AddVerb(rawChange.noun, rawChange.name, rawChange.parentName);
@@ -115,6 +117,14 @@ function activePlanName(change) {
     case 'nextup': return null;
     default: throw new Error(`unk noun ${change.noun}`);
   }
+}
+
+/** helper */
+function find(items, name) {
+  for (let item of items)
+    if (item.name == name)
+      return item;
+  return null;
 }
 
 class Storage {
@@ -152,11 +162,14 @@ class Storage {
 
   changeTask(change) {
     var plan = this.findPlan(change.parentName, true);
+    var item = find(plan.tasks, change.name);
     switch (change.verb) {
       case 'add':
         plan.tasks.push({name: change.name, finished: false});
         break;
-      // case 'finished':
+      case 'finished':
+        item.finished = change.state;
+        break;
       // case 'delete':
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
     }
@@ -165,11 +178,14 @@ class Storage {
 
   changeReq(change) {
     var plan = this.findPlan(change.parentName, true);
+    var item = find(plan.reqs, change.name);
     switch (change.verb) {
       case 'add':
         plan.reqs.push({name: change.name, finished: false});
         break;
-      // case 'finished':
+      case 'finished':
+        item.finished = change.state;
+        break;
       // case 'delete':
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
     }
@@ -214,10 +230,7 @@ class Storage {
   deserialize(callback) {
     // todo: error detection, UX feedback (loading / finished)
     var rl = readline.createInterface({input: fs.createReadStream(this.logFileName)});
-    rl.on('line', line => {
-      console.log('line', line);
-      this.logChange(JSON.parse(line), true);
-    });
+    rl.on('line', line => this.logChange(JSON.parse(line), true));
     rl.on('close', callback);
   }
 }
