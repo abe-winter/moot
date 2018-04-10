@@ -10,6 +10,21 @@ class Application {
     this.activePlanName = null;
   }
 
+  init1(document) {
+    // todo: set loading modal
+    this.storage.deserialize(() => this.init2(document));
+  }
+
+  /** callback for init1 */
+  init2(document) {
+    // todo: clear loading modal
+    this.render(document);
+    var logContainer = document.querySelector('div.log');
+    for (let change of this.storage.changeLog) {
+      this.addLog(document, logContainer, change.render());
+    }
+  }
+
   render(document) {
     var plans = document.querySelector('div.plans');
     for (var elt of document.querySelectorAll('a.plan-link'))
@@ -50,14 +65,19 @@ class Application {
     }
   }
 
+  /** render a log string to dom */
+  addLog(document, container, logString) {
+    var logElt = document.createElement('div');
+    logElt.className = 'log-entry';
+    logElt.textContent = logString;
+    container.appendChild(logElt);
+  }
+
   addChange(document, raw) {
     var {focusSel, logString, activePlanName} = this.storage.logChange(raw);
     this.activePlanName = activePlanName || this.activePlanName;
     this.render(document);
-    var logElt = document.createElement('div');
-    logElt.className = 'log-entry';
-    logElt.textContent = logString;
-    document.querySelector('div.log').appendChild(logElt);
+    this.addLog(document, document.querySelector('div.log'), logString);
     document.querySelector(focusSel).focus();
   }
 
@@ -72,11 +92,17 @@ class Application {
   }
 
   addReq(document, name) {
-    this.addChange(document, {noun: 'req', verb: 'add', name: name, parentName: this.activePlanName});
+    if (!this.activePlanName)
+      alert("no active plan");
+    else
+      this.addChange(document, {noun: 'req', verb: 'add', name: name, parentName: this.activePlanName});
   }
 
   addTask(document, name) {
-    this.addChange(document, {noun: 'task', verb: 'add', name: name, parentName: this.activePlanName});
+    if (!this.activePlanName)
+      alert("no active plan");
+    else
+      this.addChange(document, {noun: 'task', verb: 'add', name: name, parentName: this.activePlanName});
   }
 
   addNextup(document, name) {

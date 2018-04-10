@@ -1,5 +1,8 @@
 // storage.js -- log-based storage system
 
+var readline = require('readline');
+var fs = require('fs');
+
 class AddVerb {
   constructor(noun, name, parentName) {
     this.noun = noun;
@@ -119,6 +122,7 @@ class Storage {
     this.changeLog = []; // log-based storage. stores rawChange (i.e. json serializable)
     this.plans = [];
     this.icebox = [];
+    this.logFileName = 'log.json';
   }
 
   findPlan(name, required) {
@@ -196,21 +200,25 @@ class Storage {
   }
 
   /** try applying a change and add to log if successful. return rendering instruction */
-  logChange(rawChange) {
+  logChange(rawChange, nopush) {
     var change = inflateChange(rawChange);
     var focusSel = this.processChange(change);
     this.changeLog.push(change);
+    if (!nopush) {
+      fs.appendFile(this.logFileName, JSON.stringify(rawChange) + '\n');
+    }
     return {focusSel, logString: change.render(), activePlanName: activePlanName(change)};
   }
 
-  /** write to path */
-  serialize(path) {
-    throw new Error("notimp");
-  }
-
-  /** read from path */
-  deserialize(path) {
-    throw new Error("notimp");
+  /** read from path. wipes what you've got in memory. */
+  deserialize(callback) {
+    // todo: error detection, UX feedback (loading / finished)
+    var rl = readline.createInterface({input: fs.createReadStream(this.logFileName)});
+    rl.on('line', line => {
+      console.log('line', line);
+      this.logChange(JSON.parse(line), true);
+    });
+    rl.on('close', callback);
   }
 }
 
