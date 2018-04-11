@@ -6,34 +6,38 @@
 </head>
 <body>
 <script src="application.js"></script>
-<script type="text/javascript">
-  var APP = new Application;
-  APP.init1(document);
-</script>
 <div class="outer">
   <div class="split">
     <div class="left">
       <div class="plans">
-        <h3>plans list</h3>
-        <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(document, this.value); this.value='';">
+        <h3>active plans list</h3>
+        <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(this.value); this.value='';">
+        <moot-plan-line v-for="plan in plans" v-bind:plan="plan" :key="plan.name"></moot-plan-line>
       </div>
       <div class="requirements">
         <h3>requirements / goals</h3>
-        <input type="text" class="item" placeholder="add requirement" onchange="APP.addReq(document, this.value); this.value='';">
+        <input type="text" class="item" placeholder="add requirement" onchange="APP.addReq(this.value); this.value='';">
+        <moot-checkable v-for="req in selectedPlan.reqs" v-bind:item="req" v-bind:noun="'req'" :key="req.name"></moot-checkable>
       </div>
       <div class="plan-details">
         <h3>tasks / details</h3>
-        <input type="text" class="item" placeholder="add detail / task" onchange="APP.addTask(document, this.value); this.value='';">
+        <input type="text" class="item" placeholder="add detail / task" onchange="APP.addTask(this.value); this.value='';">
+        <moot-checkable v-for="task in selectedPlan.tasks" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
       </div>
     </div>
     <div class="log">
       <h3>log</h3>
+      <div class="log-entry" v-for="log in changeLog">{{log.render()}}</div>
     </div>
   </div>
   <div class="nextup">
     <h3 style="display:inline">nextup</h3>
-    <input type="text" class="item" placeholder="add icebox" onchange="APP.addNextup(document, this.value); this.value='';">
+    <input type="text" class="item" placeholder="add icebox" onchange="APP.addNextup(this.value); this.value='';">
   </div>
 </div>
+<script type="text/javascript">
+  var APP = new Application;
+  APP.init1(document);
+</script>
 </body>
 </html>

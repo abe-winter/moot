@@ -1,124 +1,83 @@
 // application.js -- data & display-related state (focused pane, selected item, maybe scroll position, maybe modal status)
 
 var storage = require('./storage');
+var Vue = require('vue/dist/vue');
+
+Vue.component('moot-checkable', {
+  props: ['item', 'noun'],
+  template: `<label class="item">
+    <input type="checkbox" v-on:change="$parent.oncheck(noun, item)" v-bind:checked="item.finished">
+    {{item.name}}
+    <span v-on:click="alert('del')">(del)</span>
+  </label>`,
+});
+
+Vue.component('moot-plan-line', {
+  props: ['plan'],
+  template: `<a class="plan-link" href="#" v-on:click="$parent.selectPlan(plan.name)">{{plan.name}}</a>`,
+});
 
 /** expose things called by the UI */
 class Application {
   constructor() {
     console.log('storage', storage);
     this.storage = new storage.Storage;
-    this.activePlanName = null;
+    var this_ = this;
+    this.vue = new Vue({
+      el:'div.outer',
+      data: {
+        plans: [],
+        selectedPlan: {reqs:[], tasks:[]},
+        changeLog: [],
+      },
+      methods: {
+        selectPlan: function selectPlan(planName) {
+          this.selectedPlan = this_.storage.findPlan(planName);
+        },
+        oncheck: function oncheck(noun, item) {
+          this_.storage.logChange({
+            parentName: this.selectedPlan.name,
+            name: item.name,
+            noun,
+            verb: 'finished',
+            state: !item.finished,
+          });
+        }
+      }
+    });
   }
 
-  init1(document) {
+  init1() {
     // todo: set loading modal
-    this.storage.deserialize(() => this.init2(document));
+    this.storage.deserialize(() => this.init2());
   }
 
   /** callback for init1 */
-  init2(document) {
+  init2() {
     // todo: clear loading modal
-    this.render(document);
-    var logContainer = document.querySelector('div.log');
-    for (let change of this.storage.changeLog) {
-      this.addLog(document, logContainer, change.render());
-    }
+    this.vue.plans = this.storage.plans;
+    this.vue.changeLog = this.storage.changeLog;
   }
 
-  /** helper for checklist rendering w/ callbacks */
-  renderChecklist(document, container, plan, noun, items, className) {
-    for (let item of items) {
-      let elt = document.createElement('label');
-      elt.className = className;
-      var check = document.createElement('input');
-      check.type = 'checkbox';
-      check.checked = item.finished;
-      check.onchange = (evt) => this.oncheck(document, plan, noun, item, evt);
-      elt.appendChild(check);
-      elt.appendChild(document.createTextNode(' ' + item.name + ' '));
-      var span = document.createElement('span');
-      span.textContent = '(del)';
-      span.onclick = (evt) => {
-        alert('todo: delete things');
-        return false;
-      };
-      elt.appendChild(span);
-      container.appendChild(elt);
-    }
+  addPlan(name) {
+    this.storage.logChange(document, {noun: 'plan', verb: 'add', name: name});
   }
 
-  render(document) {
-    var plans = document.querySelector('div.plans');
-    for (var elt of document.querySelectorAll('a.plan-link'))
-      elt.remove();
-    for (let plan of this.storage.plans) {
-      let elt = document.createElement('a');
-      elt.className = 'plan-link';
-      elt.textContent = plan.name;
-      elt.href = '#';
-      elt.onclick = () => this.selectPlan(document, plan.name);
-      plans.appendChild(elt);
-    }
-    
-    var plan = this.storage.findPlan(this.activePlanName);
-    
-    for (var elt of document.querySelectorAll('label.req-item'))
-      elt.remove();
-    
-    for (var elt of document.querySelectorAll('label.plan-item'))
-      elt.remove();
-    
-    if (plan) {
-      this.renderChecklist(document, document.querySelector('div.requirements'), plan, 'req', plan.reqs, 'req-item');
-      this.renderChecklist(document, document.querySelector('div.plan-details'), plan, 'task', plan.tasks, 'plan-item');
-    }
-  }
-
-  oncheck(document, plan, noun, item, evt) {
-    this.addChange(document, {parentName: plan.name, name: item.name, noun, verb: 'finished', state: evt.target.checked});
-  }
-
-  /** render a log string to dom */
-  addLog(document, container, logString) {
-    var logElt = document.createElement('div');
-    logElt.className = 'log-entry';
-    logElt.textContent = logString;
-    container.appendChild(logElt);
-  }
-
-  addChange(document, raw) {
-    var {focusSel, logString, activePlanName} = this.storage.logChange(raw);
-    this.activePlanName = activePlanName || this.activePlanName;
-    this.render(document);
-    this.addLog(document, document.querySelector('div.log'), logString);
-    document.querySelector(focusSel).focus();
-  }
-
-  addPlan(document, name) {
-    this.addChange(document, {noun: 'plan', verb: 'add', name: name});
-  }
-
-  selectPlan(document, name) {
-    console.log('select plan', name);
-    this.activePlanName = name;
-    this.render(document);
-  }
-
-  addReq(document, name) {
-    if (!this.activePlanName)
+  addReq(name) {
+    if (!this.vue.selectPlan)
       alert("no active plan");
     else
-      this.addChange(document, {noun: 'req', verb: 'add', name: name, parentName: this.activePlanName});
+      this.storage.logChange({noun: 'req', verb: 'add', name: name, parentName: this.vue.selectedPlan.name});
   }
 
-  addTask(document, name) {
-    if (!this.activePlanName)
+  addTask(name) {
+    if (!this.vue.selectedPlan)
       alert("no active plan");
     else
-      this.addChange(document, {noun: 'task', verb: 'add', name: name, parentName: this.activePlanName});
+      this.storage.logChange({noun: 'task', verb: 'add', name: name, parentName: this.vue.selectedPlan.name});
   }
 
-  addNextup(document, name) {
-    this.addChange(document, {noun: 'nextup', verb: 'add', name: name});
+  addNextup(name) {
+    this.storage.logChange({noun: 'nextup', verb: 'add', name: name});
   }
 }

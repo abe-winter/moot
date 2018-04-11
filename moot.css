@@ -9,5 +9,4 @@ html, body {height:100%; margin:0; padding:0; background:lightgray;}
 div.nextup {flex-grow:0; border-top:solid 1px black; padding:10px;}
 input.item {background-color:lightgray; font-size:large; border:solid 1px black; padding:10px 20px;}
 a.plan-link {display:block; margin:10px; font-size:large; text-decoration:none; color:black;}
-label.req-item {display:block; margin:10px; font-size:large;}
-label.plan-item {display:block; margin:10px; font-size:large;}
+label.item {display:block; margin:10px; font-size:large;}

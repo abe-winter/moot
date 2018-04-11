@@ -26,5 +26,8 @@
   "homepage": "https://github.com/abe-winter/moot#readme",
   "devDependencies": {
     "electron": "^1.8.4"
+  },
+  "dependencies": {
+    "vue": "^2.5.16"
   }
 }
