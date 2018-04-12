@@ -60,7 +60,7 @@ class Application {
   }
 
   addPlan(name) {
-    this.storage.logChange(document, {noun: 'plan', verb: 'add', name: name});
+    this.storage.logChange({noun: 'plan', verb: 'add', name: name});
   }
 
   addReq(name) {
