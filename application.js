@@ -8,13 +8,22 @@ Vue.component('moot-checkable', {
   template: `<label class="item">
     <input type="checkbox" v-on:change="$parent.oncheck(noun, item)" v-bind:checked="item.finished">
     {{item.name}}
-    <span v-on:click="alert('del')">(del)</span>
+    <div class="controls">
+      <span v-on:click="$parent.edit('plan', plan)">edit</span>
+      <span v-on:click="$parent.del('plan', plan)">delete</span>
+    </div>
   </label>`,
 });
 
 Vue.component('moot-plan-line', {
   props: ['plan'],
-  template: `<a class="plan-link" href="#" v-on:click="$parent.selectPlan(plan.name)">{{plan.name}}</a>`,
+  template: `<a class="plan-link" href="#" v-on:click="$parent.selectPlan(plan.name)" v-bind:class="{ highlighted: $parent.selectedPlan === plan }">
+    {{plan.name}}
+    <div class="controls">
+      <span v-on:click="$parent.edit('plan', plan)">edit</span>
+      <span v-on:click="$parent.del('plan', plan)">delete</span>
+    </div>
+  </a>`,
 });
 
 /** expose things called by the UI */
@@ -33,6 +42,12 @@ class Application {
       methods: {
         selectPlan: function selectPlan(planName) {
           this.selectedPlan = this_.storage.findPlan(planName);
+        },
+        edit: function edit(noun, item) {
+          alert(`edit ${noun}, ${JSON.stringify(item)}`);
+        },
+        del: function del(noun, item) {
+          alert(`delete ${noun}, ${JSON.stringify(item)}`);
         },
         oncheck: function oncheck(noun, item) {
           this_.storage.logChange({
