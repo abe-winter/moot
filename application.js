@@ -5,52 +5,87 @@ var Vue = require('vue/dist/vue');
 
 Vue.component('moot-checkable', {
   props: ['item', 'noun'],
-  template: `<label class="item">
-    <input type="checkbox" v-on:change="$parent.oncheck(noun, item)" v-bind:checked="item.finished">
-    {{item.name}}
-    <div class="controls">
-      <span v-on:click="$parent.edit('plan', plan)">edit</span>
-      <span v-on:click="$parent.del('plan', plan)">delete</span>
+  template: `<div class="item">
+    <label>
+      <input type="checkbox" v-on:change="$parent.oncheck(noun, item)" v-bind:checked="item.finished">
+      {{item.name}}
+    </label>
+    <div class="controls" v-on:click="$event.stopPropagation()">
+      <span v-on:click="$parent.edit(noun, item)">edit</span>
+      <span v-on:click="$parent.del(noun, item)">delete</span>
     </div>
-  </label>`,
+  </div>`,
 });
 
 Vue.component('moot-plan-line', {
   props: ['plan'],
   template: `<a class="plan-link" href="#" v-on:click="$parent.selectPlan(plan.name)" v-bind:class="{ highlighted: $parent.selectedPlan === plan }">
     {{plan.name}}
-    <div class="controls">
+    <div class="controls" v-on:click="$event.stopPropagation()">
       <span v-on:click="$parent.edit('plan', plan)">edit</span>
       <span v-on:click="$parent.del('plan', plan)">delete</span>
     </div>
   </a>`,
 });
 
+Vue.component('moot-modal', {
+  props: ['modal', 'value'],
+  template: `<div class="modal-background" v-on:click="modal.showModal=false" v-if="modal.showModal">
+    <div class="modal" v-on:click="$event.stopPropagation()">
+      <div class="modal-message">{{modal.message}}</div>
+      <input v-if="modal.useInput" v-model="value" v-bind:placeholder="modal.placeholder"></input>
+      <div class="modal-choices">
+        <button v-for="choice in modal.choices" :class="choice.cssClass" v-on:click="click(choice)">{{choice.name}}</button>
+      </div>
+    </div>
+  </div>`,
+  methods: {
+    click: function click(choice) {
+      this.$emit(choice.name, this.value);
+      this.modal.showModal = false;
+    },
+  }
+});
+
 /** expose things called by the UI */
 class Application {
   constructor() {
     console.log('storage', storage);
-    this.storage = new storage.Storage;
-    var this_ = this;
+    var store = this.storage = new storage.Storage;
     this.vue = new Vue({
       el:'div.outer',
       data: {
         plans: [],
         selectedPlan: {reqs:[], tasks:[]},
         changeLog: [],
+        modal: {
+          message: null,
+          useInput: true,
+          choices: [],
+          showModal: false,
+        },
       },
       methods: {
         selectPlan: function selectPlan(planName) {
-          this.selectedPlan = this_.storage.findPlan(planName);
+          this.selectedPlan = store.findPlan(planName);
         },
         edit: function edit(noun, item) {
-          alert(`edit ${noun}, ${JSON.stringify(item)}`);
+          this.modal = {
+            message: `rename ${noun} ${item.name}`,
+            useInput: true,
+            choices: [{name:'ok'}, {name:'cancel'}],
+            showModal: true,
+            placeholder: 'new name',
+          };
+          this.$refs.modal.$once('ok', newName =>
+            newName ? store.logChange({ noun, name: item.name, parentName: item.parentName, verb: 'edit', newName }) : null
+          );
         },
         del: function del(noun, item) {
-          alert(`delete ${noun}, ${JSON.stringify(item)}`);
+          store.logChange({ noun, name: item.name, parentName: item.parentName, verb: 'delete' });
         },
         oncheck: function oncheck(noun, item) {
-          this_.storage.logChange({
+          store.logChange({
             parentName: this.selectedPlan.name,
             name: item.name,
             noun,

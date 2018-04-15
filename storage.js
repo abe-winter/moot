@@ -62,9 +62,9 @@ class DeleteVerb {
 }
 
 class EditVerb {
-  constructor(noun, oldName, newName, newDetails, parentName) {
+  constructor(noun, name, newName, newDetails, parentName) {
     this.noun = noun;
-    this.oldName = oldName;
+    this.name = name;
     this.newName = newName;
     this.newDetails = newDetails;
     this.parentName = parentName;
@@ -78,7 +78,7 @@ class EditVerb {
   }
 
   render() {
-    return `edit ${this.noun}.${this.oldName} -> ${this.newName}, details ${this.newDetails}`;
+    return `edit ${this.noun}.${this.name} -> ${this.newName}, details ${this.newDetails}`;
   }
 }
 
@@ -93,7 +93,7 @@ function inflateChange(rawChange) {
   case 'delete':
     return new DeleteVerb(rawChange.noun, rawChange.name, rawChange.parentName);
   case 'edit':
-    return new EditVerb(rawChange.noun, rawChange.oldName, rawChange.newName, rawChange.newDetails, rawChange.parentName);
+    return new EditVerb(rawChange.noun, rawChange.name, rawChange.newName, rawChange.newDetails, rawChange.parentName);
   default:
     throw new Error("data from newer version? unk type "+change.type);
   }
@@ -150,45 +150,52 @@ class Storage {
     switch (change.verb) {
       case 'add':
         if (plan != null)
-          throw new Error(`plan ${change.name} already exists`)
+          throw new Error(`plan ${change.name} already exists`);
         this.plans.push(new Plan(change.name));
         break;
+      case 'edit':
+        if (plan == null)
+          throw new Error(`plan ${change.name} not found`);
+        plan.name = change.newName;
+        break;
       // case 'finished':
-      // case 'delete':
+      case 'delete':
+        if (plan == null)
+          throw new Error(`plan ${change.name} not found`);
+        this.plans.splice(this.plans.indexOf(plan));
+        break;
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
     }
     return 'div.plans input.item';
   }
 
-  changeTask(change) {
+  changeCommon(collection, change) {
     var plan = this.findPlan(change.parentName, true);
-    var item = find(plan.tasks, change.name);
+    var item = find(plan[collection], change.name);
     switch (change.verb) {
       case 'add':
-        plan.tasks.push({name: change.name, finished: false});
+        plan[collection].push({name: change.name, finished: false, parentName: change.parentName});
         break;
       case 'finished':
         item.finished = change.state;
         break;
-      // case 'delete':
+      case 'delete':
+        plan[collection].splice(plan[collection].indexOf(item), 1);
+        break;
+      case 'edit':
+        item.name = change.newName;
+        break;
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
     }
+  }
+
+  changeTask(change) {
+    this.changeCommon('tasks', change);
     return 'div.plan-details input.item';
   }
 
   changeReq(change) {
-    var plan = this.findPlan(change.parentName, true);
-    var item = find(plan.reqs, change.name);
-    switch (change.verb) {
-      case 'add':
-        plan.reqs.push({name: change.name, finished: false});
-        break;
-      case 'finished':
-        item.finished = change.state;
-        break;
-      // case 'delete':
-      default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
-    }
+    this.changeCommon('reqs', change);
     return 'div.requirements input.item';
   }
 

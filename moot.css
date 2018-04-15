@@ -10,6 +10,11 @@ div.nextup {flex-grow:0; border-top:solid 1px black; padding:10px;}
 input.item {background-color:lightgray; font-size:large; border:solid 1px black; padding:10px 20px;}
 a.plan-link {display:block; margin:10px; font-size:large; text-decoration:none; color:black; font-family:sans-serif;}
 label.item {display:block; margin:10px; font-size:large;}
-a.plan-link.highlighted {background-color:#66f; color:white; padding:10px;}
+a.plan-link.highlighted {background-color:#66f; color:white; padding:10px 0;}
 div.controls {float:right;}
 div.controls span {cursor:pointer; margin:0 5px;}
+
+div.modal-background {position:absolute; top:0; left:0; height:100%; width:100%; background:rgba(100,100,100,0.5);}
+div.modal {margin:20px; background:white; padding:10px; display:inline-block;}
+div.modal-message {}
+div.modal-choices {}
