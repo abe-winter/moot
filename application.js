@@ -3,6 +3,90 @@
 var storage = require('./storage');
 var Vue = require('vue/dist/vue');
 
+Vue.component('moot-log-change', {
+  props: ['change'],
+  // todo: unfinished, undelete (which means isUndelete key to distinguish vs add)
+  template: `<div class="log-entry">
+    <img :src="'feather/' + this.verb() + '.svg'">
+    <img :src="'feather/' + this.noun() + '.svg'">
+    {{new Date(change.stamp).toLocaleString()}}
+    <a v-if="change.noun == 'plan'" href="#" v-on:click="$parent.$parent.selectPlan(change.name)">{{change.name}}</a>
+    <span v-else>{{change.name}}</span>
+    <a v-if="change.parentName" href="#" v-on:click="$parent.$parent.selectPlan(change.parentName)">({{change.parentName}})</a>
+    <div class="controls">
+      <span v-on:click="$parent.$parent.undo(change)">undo</span>
+    </div>
+  </div>`,
+  methods: {
+    verb: function verb() {
+      switch (this.change.verb) {
+      case 'add': return 'file-plus';
+      case 'edit': return 'edit';
+      case 'delete': return 'trash';
+      case 'finished':
+        // todo: uncheck case
+        return 'check-square';
+      default:
+        return this.change.verb;
+      }
+    },
+    noun: function noun() {
+      switch (this.change.noun) {
+      case 'plan': return 'map';
+      case 'task': return 'play-circle';
+      case 'req': return 'target';
+      default:
+        return this.change.noun;
+      }
+    },
+  },
+});
+
+/** for ordered comparison */
+function dateToInt(date) {
+  var n = date.getDate();
+  n += date.getMonth() * 100;
+  n += date.getYear() * 10000;
+  return n;
+}
+
+Vue.component('moot-changelog', {
+  props: ['changeLog'],
+  template: `<div class="changelog">
+    <h2>today</h2>
+    <moot-log-change v-for="(change, index) in this.today()" :change=change :key="\`today-\${index}\`"></moot-log-change>
+    <h2>yesterday</h2>
+    <moot-log-change v-for="(change, index) in this.yesterday()" :change=change :key="\`yest-\${index}\`"></moot-log-change>
+    <h2>7 days</h2>
+    <moot-log-change v-for="(change, index) in this.week()" :change=change :key="\`week-\${index}\`"></moot-log-change>
+    <h2>older</h2>
+    <moot-log-change v-for="(change, index) in this.older()" :change=change :key="\`older-\${index}\`"></moot-log-change>
+  </div>`,
+  // todo: is there a way to initialize these rather than doing the same computation 4 times?
+  methods: {
+    today: function today() {
+      var today = dateToInt(new Date);
+      return this.changeLog.filter(({stamp}) => dateToInt(new Date(stamp)) == today).reverse();
+    },
+    yesterday: function yesterday() {
+      var yest = dateToInt(new Date(new Date - 86400000));
+      return this.changeLog.filter(({stamp}) => dateToInt(new Date(stamp)) == yest).reverse();
+    },
+    week: function yesterday() {
+      var a = dateToInt(new Date(new Date - 86400000));
+      var b = dateToInt(new Date(new Date - 86400000 * 7));
+      return this.changeLog.filter(({stamp}) => {
+        var date = dateToInt(new Date(stamp));
+        return date < a && date >= b;
+      }).reverse();
+    },
+    older: function older() {
+      var b = dateToInt(new Date(new Date - 86400000 * 7));
+      return this.changeLog.filter(({stamp}) => dateToInt(new Date(stamp)) < b).reverse();
+    },
+  },
+});
+
 Vue.component('moot-checkable', {
   props: ['item', 'noun'],
   template: `<div class="item">
@@ -22,6 +106,7 @@ Vue.component('moot-plan-line', {
   template: `<a class="plan-link" href="#" v-on:click="$parent.selectPlan(plan.name)" v-bind:class="{ highlighted: $parent.selectedPlan === plan }">
     {{plan.name}}
     <div class="controls" v-on:click="$event.stopPropagation()">
+      <span>history</span>
       <span v-on:click="$parent.edit('plan', plan)">edit</span>
       <span v-on:click="$parent.del('plan', plan)">delete</span>
     </div>
@@ -29,6 +114,9 @@ Vue.component('moot-plan-line', {
 });
 
 Vue.component('moot-modal', {
+  // todo: fix vue warn on input edit
+  // todo: focus input on show
+  // todo: select first choice on enter
   props: ['modal', 'value'],
   template: `<div class="modal-background" v-on:click="modal.showModal=false" v-if="modal.showModal">
     <div class="modal" v-on:click="$event.stopPropagation()">
@@ -50,7 +138,7 @@ Vue.component('moot-modal', {
 /** expose things called by the UI */
 class Application {
   constructor() {
-    console.log('storage', storage);
+    // todo: don't wrap the vue application
     var store = this.storage = new storage.Storage;
     this.vue = new Vue({
       el:'div.outer',
@@ -68,6 +156,8 @@ class Application {
       methods: {
         selectPlan: function selectPlan(planName) {
           this.selectedPlan = store.findPlan(planName);
+          if (!this.selectedPlan)
+            alert('todo: show deleted plans');
         },
         edit: function edit(noun, item) {
           this.modal = {
@@ -92,7 +182,10 @@ class Application {
             verb: 'finished',
             state: !item.finished,
           });
-        }
+        },
+        undo: function undo(change) {
+          alert(`don't know how to undo ${change.noun}.${change.verb}`);
+        },
       }
     });
   }

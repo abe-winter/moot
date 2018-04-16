@@ -4,7 +4,8 @@ var readline = require('readline');
 var fs = require('fs');
 
 class AddVerb {
-  constructor(noun, name, parentName) {
+  constructor(stamp, noun, name, parentName) {
+    this.stamp = stamp;
     this.noun = noun;
     this.name = name;
     this.parentName = parentName;
@@ -23,7 +24,8 @@ class AddVerb {
 }
 
 class FinishedVerb {
-  constructor(noun, name, state, parentName) {
+  constructor(stamp, noun, name, state, parentName) {
+    this.stamp = stamp;
     this.noun = noun;
     this.name = name;
     this.state = state;
@@ -43,7 +45,8 @@ class FinishedVerb {
 }
 
 class DeleteVerb {
-  constructor(noun, name, parentName) {
+  constructor(stamp, noun, name, parentName) {
+    this.stamp = stamp;
     this.noun = noun;
     this.name = name;
     this.parentName = parentName;
@@ -62,7 +65,8 @@ class DeleteVerb {
 }
 
 class EditVerb {
-  constructor(noun, name, newName, newDetails, parentName) {
+  constructor(stamp, noun, name, newName, newDetails, parentName) {
+    this.stamp = stamp;
     this.noun = noun;
     this.name = name;
     this.newName = newName;
@@ -87,13 +91,13 @@ function inflateChange(rawChange) {
     throw new Error("you're on a new version my friend");
   switch (rawChange.verb) {
   case 'add':
-    return new AddVerb(rawChange.noun, rawChange.name, rawChange.parentName);
+    return new AddVerb(rawChange.stamp, rawChange.noun, rawChange.name, rawChange.parentName);
   case 'finished':
-    return new FinishedVerb(rawChange.noun, rawChange.name, rawChange.state, rawChange.parentName);
+    return new FinishedVerb(rawChange.stamp, rawChange.noun, rawChange.name, rawChange.state, rawChange.parentName);
   case 'delete':
-    return new DeleteVerb(rawChange.noun, rawChange.name, rawChange.parentName);
+    return new DeleteVerb(rawChange.stamp, rawChange.noun, rawChange.name, rawChange.parentName);
   case 'edit':
-    return new EditVerb(rawChange.noun, rawChange.name, rawChange.newName, rawChange.newDetails, rawChange.parentName);
+    return new EditVerb(rawChange.stamp, rawChange.noun, rawChange.name, rawChange.newName, rawChange.newDetails, rawChange.parentName);
   default:
     throw new Error("data from newer version? unk type "+change.type);
   }
@@ -224,6 +228,12 @@ class Storage {
 
   /** try applying a change and add to log if successful. return rendering instruction */
   logChange(rawChange, nopush) {
+    if (!rawChange.stamp) {
+      rawChange.stamp = +new Date;
+    }
+    if (!rawChange.v) {
+      rawChange.v = 0;
+    }
     var change = inflateChange(rawChange);
     var focusSel = this.processChange(change);
     this.changeLog.push(change);

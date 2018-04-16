@@ -6,7 +6,11 @@ Moot is a micro-outlining tool. Micro-outlining means keeping a constant shortha
 * reduce the penalty of task-switching
 * communicate effectively about estimates & status
 
-The UX is written in electron
+The UX runs on your local machine in electron.
+
+## thanks
+
+[feather icons](https://feathericons.com)
 
 ## starting the UX
 
