@@ -11,28 +11,42 @@
   <div class="split">
     <div class="left">
       <div class="plans">
-        <h1><img src="feather/map.svg"> active plans</h1>
-        <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(this.value); this.value='';">
-        <moot-plan-line v-for="plan in plans" v-bind:plan="plan" :key="plan.name"></moot-plan-line>
-        <div v-if="!plans">Add a plan using the input box above</div>
+        <div class="banner">
+          <h1><img src="feather/map.svg"> active plans</h1>
+          <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(this.value); this.value='';">
+        </div>
+        <div class="list">
+          <moot-plan-line v-for="plan in plans" v-bind:plan="plan" :key="plan.name"></moot-plan-line>
+          <div v-if="!plans">Add a plan using the input box above</div>
+        </div>
       </div>
       <div class="requirements">
-        <h1><img src="feather/target.svg"> requirements / goals</h1>
-        <input type="text" class="item" placeholder="add requirement" onchange="APP.addReq(this.value); this.value='';">
-        <moot-checkable v-for="req in selectedPlan.reqs" v-bind:item="req" v-bind:noun="'req'" :key="req.name"></moot-checkable>
-        <div v-if="!selectedPlan.name">Select a plan in the top panel</div>
-        <div v-if="selectedPlan.name && !selectedPlan.reqs.length">Add a goal</div>
+        <div class="banner">
+          <h1><img src="feather/target.svg"> requirements / goals</h1>
+          <input type="text" class="item" placeholder="add requirement" onchange="APP.addReq(this.value); this.value='';">
+        </div>
+        <div class="list">
+          <moot-checkable v-for="req in selectedPlan.reqs" v-bind:item="req" v-bind:noun="'req'" :key="req.name"></moot-checkable>
+          <div v-if="!selectedPlan.name">Select a plan in the top panel</div>
+          <div v-if="selectedPlan.name && !selectedPlan.reqs.length">Add a goal</div>
+        </div>
       </div>
       <div class="plan-details">
-        <h1><img src="feather/play-circle.svg"> tasks / details</h1>
-        <input type="text" class="item" placeholder="add detail / task" onchange="APP.addTask(this.value); this.value='';">
-        <moot-checkable v-for="task in selectedPlan.tasks" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
-        <div v-if="!selectedPlan.name">Select a plan in the top panel</div>
-        <div v-if="selectedPlan.name && !selectedPlan.tasks.length">Add a task</div>
+        <div class="banner">
+          <h1><img src="feather/play-circle.svg"> tasks / details</h1>
+          <input type="text" class="item" placeholder="add detail / task" onchange="APP.addTask(this.value); this.value='';">
+        </div>
+        <div class="list">
+          <moot-checkable v-for="task in selectedPlan.tasks" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
+          <div v-if="!selectedPlan.name">Select a plan in the top panel</div>
+          <div v-if="selectedPlan.name && !selectedPlan.tasks.length">Add a task</div>
+        </div>
       </div>
     </div>
     <div class="log">
-      <h1><img src="feather/activity.svg"> log</h1>
+      <div class="banner">
+        <h1><img src="feather/activity.svg"> log</h1>
+      </div>
       <moot-changelog :change-log="changeLog"></moot-changelog>
     </div>
   </div>

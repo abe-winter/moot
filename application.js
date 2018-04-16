@@ -52,7 +52,7 @@ function dateToInt(date) {
 
 Vue.component('moot-changelog', {
   props: ['changeLog'],
-  template: `<div class="changelog">
+  template: `<div class="changelog list">
     <h2>today</h2>
     <moot-log-change v-for="(change, index) in this.today()" :change=change :key="\`today-\${index}\`"></moot-log-change>
     <h2>yesterday</h2>
