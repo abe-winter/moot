@@ -1,4 +1,4 @@
-html, body {height:100%; margin:0; padding:0; background:lightgray;}
+html, body {height:100%; margin:0; padding:0; background:lightgray; font-family:sans-serif;}
 .outer {display:flex; flex-direction:column; height:100%;}
 .split {flex-grow:1; width:100%; display:flex; flex-direction:row;}
 .left {flex-grow:1; overflow-y:scroll;}
@@ -8,7 +8,7 @@ html, body {height:100%; margin:0; padding:0; background:lightgray;}
 .log {flex-grow:1; padding:10px; border-left: solid 1px black; overflow-y:scroll;}
 div.nextup {flex-grow:0; border-top:solid 1px black; padding:10px;}
 input.item {background-color:lightgray; font-size:large; border:solid 1px black; padding:10px 20px;}
-a.plan-link {display:block; margin:10px; font-size:large; text-decoration:none; color:black; font-family:sans-serif;}
+a.plan-link {display:block; margin:10px; font-size:large; text-decoration:none; color:black;}
 label.item {display:block; margin:10px; font-size:large;}
 a.plan-link.highlighted {background-color:#66f; color:white; padding:10px 0;}
 div.controls {float:right;}

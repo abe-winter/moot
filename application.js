@@ -7,8 +7,8 @@ Vue.component('moot-log-change', {
   props: ['change'],
   // todo: unfinished, undelete (which means isUndelete key to distinguish vs add)
   template: `<div class="log-entry">
-    <img :src="'feather/' + this.verb() + '.svg'">
-    <img :src="'feather/' + this.noun() + '.svg'">
+    <img :src="'feather/' + this.verb() + '.svg'" :alt="this.verb()">
+    <img :src="'feather/' + this.noun() + '.svg'" :alt="this.noun()">
     {{new Date(change.stamp).toLocaleString()}}
     <a v-if="change.noun == 'plan'" href="#" v-on:click="$parent.$parent.selectPlan(change.name)">{{change.name}}</a>
     <span v-else>{{change.name}}</span>
