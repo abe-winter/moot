@@ -35,6 +35,7 @@ Vue.component('moot-log-change', {
       case 'plan': return 'map';
       case 'task': return 'play-circle';
       case 'req': return 'target';
+      case 'nextup': return 'gift';
       default:
         return this.change.noun;
       }
