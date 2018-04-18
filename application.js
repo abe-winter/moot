@@ -105,6 +105,7 @@ Vue.component('moot-checkable', {
 Vue.component('moot-plan-line', {
   props: ['plan'],
   template: `<a class="plan-link" href="#" v-on:click="$parent.selectPlan(plan.name)" v-bind:class="{ highlighted: $parent.selectedPlan === plan }">
+    <input type="checkbox" v-on:change="$parent.oncheck('plan', plan)" v-bind:checked="plan.finished" v-on:click="$event.stopPropagation()">
     {{plan.name}}
     <div class="controls" v-on:click="$event.stopPropagation()">
       <span>history</span>

@@ -162,7 +162,11 @@ class Storage {
           throw new Error(`plan ${change.name} not found`);
         plan.name = change.newName;
         break;
-      // case 'finished':
+      case 'finished':
+        if (plan == null)
+          throw new Error(`plan ${change.name} not found`);
+        plan.finished = change.state;
+        break;
       case 'delete':
         if (plan == null)
           throw new Error(`plan ${change.name} not found`);

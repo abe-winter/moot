@@ -12,12 +12,14 @@
     <div class="left">
       <div class="plans">
         <div class="banner">
-          <h1><img src="feather/map.svg"> active plans</h1>
+          <h1><img src="feather/map.svg"> plans</h1>
           <input type="text" class="item" placeholder="add plan" onchange="APP.addPlan(this.value); this.value='';">
         </div>
         <div class="list">
-          <moot-plan-line v-for="plan in plans" v-bind:plan="plan" :key="plan.name"></moot-plan-line>
-          <div v-if="!plans">Add a plan using the input box above</div>
+          <div v-if="!plans.length">Add a plan using the input box above</div>
+          <moot-plan-line v-for="plan in plans.filter(plan => !plan.finished)" v-bind:plan="plan" :key="plan.name"></moot-plan-line>
+          <hr v-if="plans.length">
+          <moot-plan-line v-for="plan in plans.filter(plan => plan.finished)" v-bind:plan="plan" :key="plan.name"></moot-plan-line>
         </div>
       </div>
       <div class="requirements">
