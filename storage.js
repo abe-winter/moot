@@ -166,7 +166,7 @@ class Storage {
       case 'delete':
         if (plan == null)
           throw new Error(`plan ${change.name} not found`);
-        this.plans.splice(this.plans.indexOf(plan));
+        this.plans.splice(this.plans.indexOf(plan), 1);
         break;
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
     }
