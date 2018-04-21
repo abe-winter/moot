@@ -12,7 +12,7 @@ a.plan-link {display:block; margin:10px; font-size:large; text-decoration:none; 
 label.item {display:block; margin:10px; font-size:large;}
 a.plan-link.highlighted {background-color:#66f; color:white; padding:10px 0;}
 div.controls {float:right;}
-div.controls span {cursor:pointer; margin:0 5px;}
+div.controls span,img {cursor:pointer; margin:0 5px;}
 div.banner {background-color:#eee; padding:10px;}
 div.banner h1 {margin:8px 0;}
 
@@ -20,3 +20,8 @@ div.modal-background {position:absolute; top:0; left:0; height:100%; width:100%;
 div.modal {margin:20px; background:white; padding:10px; display:inline-block;}
 div.modal-message {}
 div.modal-choices {}
+
+/* tooltips from here: https://www.w3schools.com/css/css_tooltip.asp */
+.tooltip {position:relative; display:inline-block;}
+.tooltip .tooltiptext {visibility:hidden; background-color:black; color:white; text-align:center; padding:5px 10px; border-radius:6px; position:absolute; z-index:10}
+.tooltip:hover .tooltiptext {visibility:visible;}

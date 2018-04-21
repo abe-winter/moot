@@ -12,9 +12,16 @@ Vue.component('moot-checkable', {
       {{item.name}}
     </label>
     <div class="controls" v-on:click="$event.stopPropagation()">
-      <span v-on:click="$parent.edit(noun, item)">edit</span>
-      <span v-on:click="$parent.del(noun, item)">delete</span>
+      <span v-on:click="$parent.edit(noun, item)" class="tooltip">
+        <img alt="edit" src="feather/edit.svg">
+        <span class="tooltiptext">edit</span>
+      </span>
+      <span v-on:click="$parent.del(noun, item)" class="tooltip">
+        <img alt="delete" src="feather/trash.svg">
+        <span class="tooltiptext" style="right:0">delete</span>
+      </span>
     </div>
+    <div style="clear:both"></div>
   </div>`,
 });
 
@@ -24,9 +31,18 @@ Vue.component('moot-plan-line', {
     <input type="checkbox" v-on:change="$parent.oncheck('plan', plan)" v-bind:checked="plan.finished" v-on:click="$event.stopPropagation()">
     {{plan.name}}
     <div class="controls" v-on:click="$event.stopPropagation()">
-      <span>history</span>
-      <span v-on:click="$parent.edit('plan', plan)">edit</span>
-      <span v-on:click="$parent.del('plan', plan)">delete</span>
+      <span class="tooltip">
+        <img alt="history" src="feather/activity.svg">
+        <span class="tooltiptext">history</span>
+      </span>
+      <span v-on:click="$parent.edit('plan', plan)" class="tooltip">
+        <img alt="edit" src="feather/edit.svg">
+        <span class="tooltiptext">edit</span>
+      </span>
+      <span v-on:click="$parent.del('plan', plan)" class="tooltip">
+        <img alt="delete" src="feather/trash.svg">
+        <span class="tooltiptext" style="right:0">delete</span>
+      </span>
     </div>
   </a>`,
 });
