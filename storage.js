@@ -44,6 +44,28 @@ class FinishedVerb {
   }
 }
 
+/** careful: start isn't the opposite of finished. finished means checkbox, start means work-in-progress */
+class StartVerb {
+  constructor(stamp, noun, name, state, parentName) {
+    this.stamp = stamp;
+    this.noun = noun;
+    this.name = name;
+    this.state = state;
+    this.parentName = parentName;
+  }
+
+  get verb() {return 'start';}
+
+  /** make sure noun supports verb */
+  checkSupported() {
+    return ['task'].indexOf(this.noun) != -1;
+  }
+
+  render() {
+    return `${this.verb} ${this.noun}.${this.name} -> ${this.state}`;
+  }
+}
+
 class DeleteVerb {
   constructor(stamp, noun, name, parentName) {
     this.stamp = stamp;
@@ -98,8 +120,10 @@ function inflateChange(rawChange) {
     return new DeleteVerb(rawChange.stamp, rawChange.noun, rawChange.name, rawChange.parentName);
   case 'edit':
     return new EditVerb(rawChange.stamp, rawChange.noun, rawChange.name, rawChange.newName, rawChange.newDetails, rawChange.parentName);
+  case 'start':
+    return new StartVerb(rawChange.stamp, rawChange.noun, rawChange.name, rawChange.state, rawChange.parentName);
   default:
-    throw new Error("data from newer version? unk type "+change.type);
+    throw new Error(`datafile from newer version? unk type ${rawChange.type}`);
   }
 }
 
@@ -186,12 +210,17 @@ class Storage {
         break;
       case 'finished':
         item.finished = change.state;
+        if (item.finished)
+          item.started = false;
         break;
       case 'delete':
         plan[collection].splice(plan[collection].indexOf(item), 1);
         break;
       case 'edit':
         item.name = change.newName;
+        break;
+      case 'start':
+        item.started = change.state;
         break;
       default: throw new Error(`unsupported ${change.noun}, ${change.verb}`);
     }

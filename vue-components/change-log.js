@@ -26,9 +26,8 @@ Vue.component('moot-log-change', {
       case 'add': return 'file-plus';
       case 'edit': return 'edit';
       case 'delete': return 'trash';
-      case 'finished':
-        // todo: uncheck case
-        return 'check-square';
+      case 'start': return 'wind'; // todo: stop case
+      case 'finished': return 'check-square'; // todo: uncheck case
       default:
         return this.change.verb;
       }

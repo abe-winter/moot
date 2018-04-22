@@ -12,6 +12,10 @@ Vue.component('moot-checkable', {
       {{item.name}}
     </label>
     <div class="controls" v-on:click="$event.stopPropagation()">
+      <span v-if="noun == 'task'" v-on:click="$parent.startToggle(noun, item)" class="tooltip">
+        <img alt="" :src="item.started ? 'feather/wind.svg' : 'feather/minus.svg'">
+        <span class="tooltiptext">{{item.started ? 'stop work' : 'start work'}}</span>
+      </span>
       <span v-on:click="$parent.edit(noun, item)" class="tooltip">
         <img alt="edit" src="feather/edit.svg">
         <span class="tooltiptext">edit</span>
@@ -115,6 +119,15 @@ class Application {
             noun,
             verb: 'finished',
             state: !item.finished,
+          });
+        },
+        startToggle: function startToggle(noun, item) {
+          store.logChange({
+            parentName: this.selectedPlan.name,
+            name: item.name,
+            noun,
+            verb: 'start',
+            state: !item.started,
           });
         },
         undo: function undo(change) {

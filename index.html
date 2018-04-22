@@ -39,9 +39,11 @@
           <input type="text" class="item" placeholder="add detail / task" onchange="APP.addTask(this.value); this.value='';">
         </div>
         <div class="list">
-          <moot-checkable v-for="task in selectedPlan.tasks" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
           <div v-if="!selectedPlan.name">Select a plan in the top panel</div>
           <div v-if="selectedPlan.name && !selectedPlan.tasks.length">Add a task</div>
+          <moot-checkable v-for="task in selectedPlan.tasks.filter(task => task.started)" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
+          <hr v-if="plans.length">
+          <moot-checkable v-for="task in selectedPlan.tasks.filter(task => !task.started)" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
         </div>
       </div>
     </div>
