@@ -41,7 +41,8 @@
         <div class="list">
           <div v-if="!selectedPlan.name">Select a plan in the top panel</div>
           <div v-if="selectedPlan.name && !selectedPlan.tasks.length">Add a task</div>
-          <moot-checkable v-for="task in selectedPlan.tasks.filter(task => task.started)" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
+          <!-- not sure why task.started is necessary but without it some redrawing doesn't happen -->
+          <moot-checkable v-for="task in selectedPlan.tasks.filter(task => task.started)" v-bind:item="task" v-bind:noun="'task'" :key="task.name + task.started"></moot-checkable>
           <hr v-if="plans.length">
           <moot-checkable v-for="task in selectedPlan.tasks.filter(task => !task.started)" v-bind:item="task" v-bind:noun="'task'" :key="task.name"></moot-checkable>
         </div>
