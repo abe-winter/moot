@@ -15,7 +15,7 @@ class AddVerb {
 
   /** make sure noun supports verb */
   checkSupported() {
-    return ['nextup', 'plan', 'task', 'req'].indexOf(this.noun) != -1;
+    return ['nextup', 'plan', 'task', 'req', 'event'].indexOf(this.noun) != -1;
   }
 
   render() {
@@ -132,18 +132,6 @@ class Plan {
     this.name = name;
     this.reqs = [];
     this.tasks = [];
-  }
-}
-
-/** what should be the active plan in UX after applying a change, or null if keep as-is */
-function activePlanName(change) {
-  switch (change.noun) {
-    case 'plan': return change.verb == 'add' ? change.name : null;
-    case 'req': // fall through
-    case 'task':
-      return null; // because if it's open for editing it's already open
-    case 'nextup': return null;
-    default: throw new Error(`unk noun ${change.noun}`);
   }
 }
 
@@ -273,7 +261,7 @@ class Storage {
     if (!nopush) {
       fs.appendFile(this.logFileName, JSON.stringify(rawChange) + '\n');
     }
-    return {focusSel, logString: change.render(), activePlanName: activePlanName(change)};
+    return {focusSel, logString: change.render()};
   }
 
   /** read from path. wipes what you've got in memory. */

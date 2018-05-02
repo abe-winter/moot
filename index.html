@@ -51,6 +51,7 @@
     <div class="log">
       <div class="banner">
         <h1><img src="feather/activity.svg"> log</h1>
+        <input type="text" class="item" placeholder="add event" onchange="APP.addEvent(this.value); this.value='';">
       </div>
       <moot-changelog :change-log="changeLog"></moot-changelog>
     </div>

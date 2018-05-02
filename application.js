@@ -150,24 +150,28 @@ class Application {
   }
 
   addPlan(name) {
-    this.storage.logChange({noun: 'plan', verb: 'add', name: name});
+    this.storage.logChange({noun: 'plan', verb: 'add', name});
   }
 
   addReq(name) {
     if (!this.vue.selectPlan)
       alert("no active plan");
     else
-      this.storage.logChange({noun: 'req', verb: 'add', name: name, parentName: this.vue.selectedPlan.name});
+      this.storage.logChange({noun: 'req', verb: 'add', name, parentName: this.vue.selectedPlan.name});
   }
 
   addTask(name) {
     if (!this.vue.selectedPlan)
       alert("no active plan");
     else
-      this.storage.logChange({noun: 'task', verb: 'add', name: name, parentName: this.vue.selectedPlan.name});
+      this.storage.logChange({noun: 'task', verb: 'add', name, parentName: this.vue.selectedPlan.name});
   }
 
   addNextup(name) {
-    this.storage.logChange({noun: 'nextup', verb: 'add', name: name});
+    this.storage.logChange({noun: 'nextup', verb: 'add', name});
+  }
+
+  addEvent(name) {
+    this.storage.logChange({noun: 'event', verb: 'add', name});
   }
 }
